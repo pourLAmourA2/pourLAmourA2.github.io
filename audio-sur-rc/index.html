@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Lecteur audio pour Réseau Contact</title>
+</head>
+<body>
+  <h1>Lecteur audio pour Réseau Contact</h1>
+  <div>
+    <input type="text" id="profileURL" value="URL d'un profil" style="width:100%; max-width:920px;">
+    <input type="button" id="boLoad" value="Charger l'album" style="width:100%; max-width:920px;" onclick="loadRCprofile()">
+  </div>
+  <div>
+    <iframe id="profileOnRC" style="width:100%; max-width:384px; height:384px;"></iframe>
+  </div>
+</body>
+<script>
+function loadRCprofile() {
+  var profileURL = document.getElementById("profileURL").value;
+  var re = new RegExp("^http://www.reseaucontact.com/profil/");
+
+  if (re.exec(profileURL)) {
+    document.getElementById("profileOnRC").src = profileURL;
+  }
+}
+</script>
+</html>
