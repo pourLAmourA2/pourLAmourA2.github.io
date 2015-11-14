@@ -6,15 +6,24 @@
 </head>
 <body>
   <h1>Lecteur audio pour Réseau Contact</h1>
+  <input type="text" id="profileURL" value="URL d'un profil" style="width:100%; max-width:920px;"
+    onfocus="eraseDefault()" onkeypress="if (event.keyCode == 13) loadRCprofile();"><br />
+  <input type="button" id="boLoad" value="Charger l'album" style="width:100%; max-width:920px;"
+    onclick="loadRCprofile()">
   <div>
-    <input type="text" id="profileURL" value="URL d'un profil" style="width:100%; max-width:920px;">
-    <input type="button" id="boLoad" value="Charger l'album" style="width:100%; max-width:920px;" onclick="loadRCprofile()">
-  </div>
-  <div>
-    <iframe id="profileOnRC" style="width:100%; max-width:384px; height:384px;"></iframe>
+    <div style="background-color:#696969; width:512px; height:384px; float:left;">
+    </div>
+    <iframe id="profileOnRC" style="width:100%; max-width:384px; height:384px;"
+      onload="parsePictures()"></iframe>
   </div>
 </body>
 <script>
+function eraseDefault() {
+  var profileURL = document.getElementById("profileURL");
+  profileURL.onfocus = function(){};
+  profileURL.value = "";
+}
+
 function loadRCprofile() {
   var profileURL = document.getElementById("profileURL").value;
   var re = new RegExp("^http://www.reseaucontact.com/profil/");
@@ -22,6 +31,10 @@ function loadRCprofile() {
   if (re.exec(profileURL)) {
     document.getElementById("profileOnRC").src = profileURL;
   }
+}
+
+function parsePictures() {
+  console.log("parsePictures");
 }
 </script>
 </html>
