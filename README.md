@@ -1,2 +1,2 @@
-# pourLAmourA2.github.io
-Pour l'amour à deux
+# Pour l'amour à deux
+http://pourlamoura2.github.io/
