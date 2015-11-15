@@ -4,24 +4,49 @@
   <meta charset="UTF-8">
   <title>Lecteur audio pour Réseau Contact</title>
 </head>
+
 <body>
   <h1>Lecteur audio pour Réseau Contact</h1>
-  <input type="text" id="profileURL" value="URL d'un profil" style="width:100%; max-width:920px;"
-    onfocus="eraseDefault()" onkeypress="if (event.keyCode == 13) loadRCprofile();"><br />
-  <input type="button" id="boLoad" value="Charger l'album" style="width:100%; max-width:920px;"
-    onclick="loadRCprofile()">
-  <div>
-    <div style="background-color:#696969; width:512px; height:384px; float:left;">
+  <div style="width:100%; margin-bottom:4px;">
+    <input type="text" id="profileURL" value="Adresse d'un profil - Par ex.: http://www.reseaucontact.com/profil/..."
+      style="color:#696969; font-style:italic; width:100%; max-width:896px;"
+      onfocus="clearURL()" onblur="initURL()" onkeypress="if (event.keyCode == 13) loadRCprofile();">
+  </div>
+
+  <div style="float:left; width:100%; max-width:512px; margin-right:4px;">
+    <input type="button" id="boLoad" value="Charger l'album audio"
+      style="width:100%; height:32px; margin-bottom:4px;"
+      onclick="loadRCprofile()">
+    <div id="audioControls"
+      style="background-color:#696969; width:100%; height:400px;">
     </div>
-    <iframe id="profileOnRC" style="width:100%; max-width:384px; height:384px;"
+  </div>
+
+  <div style="float:left; width:384px;">
+    <iframe id="profileOnRC"
+      style="width:100%; height:432px;"
       onload="parsePictures()"></iframe>
   </div>
 </body>
+
 <script>
-function eraseDefault() {
+function clearURL() {
   var profileURL = document.getElementById("profileURL");
-  profileURL.onfocus = function(){};
+  profileURL.onfocus = function(){ profileURL.select(); };
   profileURL.value = "";
+  profileURL.style.fontStyle = "normal";
+  profileURL.style.color = "#000000";
+}
+
+function initURL() {
+  var profileURL = document.getElementById("profileURL");
+
+  if (profileURL.value.length == 0) {
+    profileURL.style.color = "#696969";
+    profileURL.style.fontStyle = "italic";
+    profileURL.value = "Adresse d'un profil - Par ex.: http://www.reseaucontact.com/profil/...";
+    profileURL.onfocus = clearURL;
+  }
 }
 
 function loadRCprofile() {
@@ -34,6 +59,7 @@ function loadRCprofile() {
 }
 
 function parsePictures() {
+  // albumWrapperMobile
   console.log("parsePictures");
 }
 </script>
