@@ -27,7 +27,7 @@
         <input type="button" id="boLoad"
           value="Charger la photo"
           style="width:100%; height:32px; margin-bottom:4px;"
-          onclick="loadRCphoto()">
+          onclick="loadPhoto()">
 
         <div id="audioControls" style="background-color:#A2A2A2; width:100%;">
         </div>
@@ -37,10 +37,6 @@
 </body>
 
 <script>
-var mainCanvas = document.getElementById("mainCanvas");
-var mainWidth = mainCanvas.width;
-var mainHeight = mainCanvas.height;
-
 function clearURL() {
   var photoURL = document.getElementById("photoURL");
   photoURL.onfocus = function(){ photoURL.select(); };
@@ -60,7 +56,12 @@ function initURL() {
   }
 }
 
-function loadRCphoto() {
+
+var mainCanvas = document.getElementById("mainCanvas");
+var mainWidth = mainCanvas.width;
+var mainHeight = mainCanvas.height;
+
+function loadPhoto() {
   var photoURL = document.getElementById("photoURL").value;
   var reWeb = new RegExp("^http://image.reseaucontact.com/v1/dynamic_resize/id/");
   var reLoc = new RegExp("^file:///");
@@ -82,17 +83,12 @@ function loadRCphoto() {
       }
       else {
         mainContex.clearRect(0, 0, mainWidth, mainHeight);
+        mainContex.fillText("L'image n'a pas une taille de 256x525", 4, 12);
       }
     }
 
     encodedImage.src = photoURL;
   }
-}
-
-function parsePicture() {
-  var curImage = document.getElementById("photoOnRC");
-  console.log(curImage.naturalWidth);
-  console.log(curImage.naturalHeight);
 }
 </script>
 </html>
