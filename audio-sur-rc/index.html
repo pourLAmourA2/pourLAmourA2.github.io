@@ -18,7 +18,9 @@
 
     <div style="width:100%;">
       <div style="float:right; width:256px;">
-        <canvas id="photoOnRC" style="background-color:#ffbfff; width:256px; height:525px;">
+        <canvas id="mainCanvas" height="525" width="256" style="background-color:#ffbfff;">
+          Votre navigateur ne supporte pas les canvas. Désolé!
+        </canvas>
       </div>
 
       <div style="margin-right:260px;">
@@ -35,6 +37,10 @@
 </body>
 
 <script>
+var mainCanvas = document.getElementById("mainCanvas");
+var mainWidth = mainCanvas.width;
+var mainHeight = mainCanvas.height;
+
 function clearURL() {
   var photoURL = document.getElementById("photoURL");
   photoURL.onfocus = function(){ photoURL.select(); };
@@ -66,8 +72,20 @@ function loadRCphoto() {
     photoURL = photoURL.replace(/&clip=[0-9]+/gi, "");
     photoURL = photoURL.replace(/&clip_gravity=[a-z]+/gi, "");
 
-    // document.getElementById("audioControls").innerHTML = photoURL;
-    document.getElementById("photoOnRC").src = photoURL;
+    var encodedImage = new Image();
+
+    encodedImage.onload = function() {
+      var mainContex = mainCanvas.getContext('2d');
+
+      if (encodedImage.naturalWidth == mainWidth && encodedImage.naturalHeight == mainHeight) {
+        mainContex.drawImage(encodedImage, 0, 0);
+      }
+      else {
+        mainContex.clearRect(0, 0, mainWidth, mainHeight);
+      }
+    }
+
+    encodedImage.src = photoURL;
   }
 }
 
