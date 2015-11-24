@@ -7,27 +7,30 @@
 
 <body>
   <h1>Lecteur audio pour Réseau Contact</h1>
-  <div style="width:100%; margin-bottom:4px;">
-    <input type="text" id="photoURL"
-      value="Adresse d'une photo sur RC - Par ex.: http://image.reseaucontact.com/v1/dynamic_resize/id/..."
-      style="color:#696969; font-style:italic; width:100%; max-width:892px;"
-      onfocus="clearURL()" onblur="initURL()" onkeypress="if (event.keyCode == 13) loadRCphoto();">
-  </div>
 
-  <div style="float:left; width:100%; max-width:640px; margin-right:4px;">
-    <input type="button" id="boLoad"
-      value="Charger la photo"
-      style="width:100%; height:32px; margin-bottom:4px;"
-      onclick="loadRCphoto()">
-    <div id="audioControls"
-      style="background-color:#A2A2A2; width:100%; height:400px;">
+  <div style="min-width:400px; width:100%; max-width:892px;">
+    <div style="width:100%; margin-bottom:4px;">
+      <input type="text" id="photoURL"
+        value="Adresse d'une photo sur RC - Par ex.: http://image.reseaucontact.com/v1/dynamic_resize/id/..."
+        style="color:#696969; border:0px; border-bottom:1px solid; font-style:italic; padding:4px 0px; width:100%;"
+        onfocus="clearURL()" onblur="initURL()" onkeypress="if (event.keyCode == 13) loadRCphoto();">
     </div>
-  </div>
 
-  <div style="float:left; width:256px;">
-    <img id="photoOnRC" alt="Veuillez entrer une adresse valide dans le champ ci-dessus"
-      style="background-color:#ffbfff; width:256px; height:525px;"
-      onload="parsePicture()"></img>
+    <div style="width:100%;">
+      <div style="float:right; width:256px;">
+        <canvas id="photoOnRC" style="background-color:#ffbfff; width:256px; height:525px;">
+      </div>
+
+      <div style="margin-right:260px;">
+        <input type="button" id="boLoad"
+          value="Charger la photo"
+          style="width:100%; height:32px; margin-bottom:4px;"
+          onclick="loadRCphoto()">
+
+        <div id="audioControls" style="background-color:#A2A2A2; width:100%;">
+        </div>
+      </div>
+    </div>
   </div>
 </body>
 
@@ -53,9 +56,10 @@ function initURL() {
 
 function loadRCphoto() {
   var photoURL = document.getElementById("photoURL").value;
-  var re = new RegExp("^http://image.reseaucontact.com/v1/dynamic_resize/id/");
+  var reWeb = new RegExp("^http://image.reseaucontact.com/v1/dynamic_resize/id/");
+  var reLoc = new RegExp("^file:///");
 
-  if (re.exec(photoURL)) {
+  if (reWeb.exec(photoURL) || reLoc.exec(photoURL)) {
     photoURL = photoURL.replace(/size=[0-9]+x[0-9]+/gi, "size=700x525");
     photoURL = photoURL.replace(/resize_bigger=[a-z]+/gi, "resize_bigger=false");
     photoURL = photoURL.replace(/quality=[0-9]+/gi, "quality=99");
