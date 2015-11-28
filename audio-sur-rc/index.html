@@ -13,7 +13,7 @@
       <input type="text" id="photoURL"
         value="Adresse d'une photo sur RC - Par ex.: http://image.reseaucontact.com/v1/dynamic_resize/id/..."
         style="color:#696969; border:0px; border-bottom:1px solid; font-style:italic; padding:4px 0px; width:100%;"
-        onfocus="clearURL()" onblur="initURL()" onkeypress="if (event.keyCode == 13) loadRCphoto();">
+        onfocus="clearURL()" onblur="initURL()" onkeypress="if (event.keyCode == 13) loadURL();">
     </div>
 
     <div style="width:100%;">
@@ -27,18 +27,28 @@
         <input type="button" id="boLoad"
           value="Charger la photo"
           style="width:100%; height:32px; margin-bottom:4px;"
-          onclick="loadPhoto()">
+          onclick="loadURL()" />
 
-        <div id="audioControls" style="background-color:#A2A2A2; width:100%;">
+        <div id="audioControls" style="width:100%;">
+          <input id="boPlay" type="button" value="| >  /  [  ]"
+            style="width:100%; height:32px; margin-bottom:4px;"
+            onclick="loadURL()" />
         </div>
       </div>
     </div>
   </div>
 </body>
 
+<script src="audixel.js" type="text/javascript"></script>
+<script src="core.js" type="text/javascript"></script>
+
 <script>
+var photoURL = document.getElementById("photoURL");
+
+var boLoad = document.getElementById("boLoad");
+boLoad.disabled = false;
+
 function clearURL() {
-  var photoURL = document.getElementById("photoURL");
   photoURL.onfocus = function(){ photoURL.select(); };
   photoURL.value = "";
   photoURL.style.fontStyle = "normal";
@@ -46,8 +56,6 @@ function clearURL() {
 }
 
 function initURL() {
-  var photoURL = document.getElementById("photoURL");
-
   if (photoURL.value.length == 0) {
     photoURL.style.color = "#696969";
     photoURL.style.fontStyle = "italic";
@@ -57,37 +65,37 @@ function initURL() {
 }
 
 
-var mainCanvas = document.getElementById("mainCanvas");
-var mainWidth = mainCanvas.width;
-var mainHeight = mainCanvas.height;
-
-function loadPhoto() {
-  var photoURL = document.getElementById("photoURL").value;
+function loadURL() {
+  var theURL = photoURL.value;
   var reWeb = new RegExp("^http://image.reseaucontact.com/v1/dynamic_resize/id/");
-  var reLoc = new RegExp("^file:///");
+  var reLoc = new RegExp("^file://");
 
-  if (reWeb.exec(photoURL) || reLoc.exec(photoURL)) {
-    photoURL = photoURL.replace(/size=[0-9]+x[0-9]+/gi, "size=700x525");
-    photoURL = photoURL.replace(/resize_bigger=[a-z]+/gi, "resize_bigger=false");
-    photoURL = photoURL.replace(/quality=[0-9]+/gi, "quality=99");
-    photoURL = photoURL.replace(/&clip=[0-9]+/gi, "");
-    photoURL = photoURL.replace(/&clip_gravity=[a-z]+/gi, "");
+  if (reWeb.exec(theURL) || reLoc.exec(theURL)) {
+    theURL = theURL.replace(/size=[0-9]+x[0-9]+/gi, "size=700x525");
+    theURL = theURL.replace(/resize_bigger=[a-z]+/gi, "resize_bigger=false");
+    theURL = theURL.replace(/quality=[0-9]+/gi, "quality=99");
+    theURL = theURL.replace(/&clip=[0-9]+/gi, "");
+    theURL = theURL.replace(/&clip_gravity=[a-z]+/gi, "");
 
     var encodedImage = new Image();
 
     encodedImage.onload = function() {
-      var mainContex = mainCanvas.getContext('2d');
-
       if (encodedImage.naturalWidth == mainWidth && encodedImage.naturalHeight == mainHeight) {
         mainContex.drawImage(encodedImage, 0, 0);
+        boPlay.onclick = function() { onStartPlay(boLoad); }
+        boPlay.disabled = false;
       }
       else {
         mainContex.clearRect(0, 0, mainWidth, mainHeight);
         mainContex.fillText("L'image n'a pas une taille de 256x525", 4, 12);
+        boPlay.disabled = true;
       }
     }
 
-    encodedImage.src = photoURL;
+    encodedImage.src = theURL;
+  }
+  else {
+    boPlay.disabled = true;
   }
 }
 </script>
