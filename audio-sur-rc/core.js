@@ -1,10 +1,5 @@
 var DEBUG = false;
 
-var mainCanvas = document.getElementById("mainCanvas");
-var mainContex = mainCanvas.getContext('2d');
-var mainWidth = mainCanvas.width;
-var mainHeight = mainCanvas.height;
-
 var boPlay = document.getElementById("boPlay");
 boPlay.disabled = true;
 
@@ -18,7 +13,9 @@ var onStartPlay = function(boGetSource) {
     boPlay.disabled = true;
 
     var audixel = new Audixel();
-    var audioSamples = audixel.decodeAudio(mainContex, mainWidth, scaledSampleRate, audioCtx.sampleRate);
+    var imageData = mainContex.getImageData(0, mainWidth, mainWidth, mainWidth);
+    var onlyData = imageData.data;
+    var audioSamples = audixel.decodeAudio(onlyData, mainWidth, scaledSampleRate, audioCtx.sampleRate);
 
     // audio.play(
 

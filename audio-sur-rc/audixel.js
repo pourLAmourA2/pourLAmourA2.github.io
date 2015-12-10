@@ -17,8 +17,7 @@ function Audixel() {
         return {x:coord[0], y:coord[1]};
     }
 
-    this.decodeAudio = function(cvCtx, cvWidth, lowRate, highRate) {
-        var audioPixels = canvasCtx.getImageData(0, cvWidth, cvWidth, cvWidth).data;
+    this.decodeAudio = function(audioPixels, cvWidth, lowRate, highRate) {
         var nbScaledSamples = cvWidth * cvWidth;
         var scaledSamples = new Float32Array(nbScaledSamples);
 
