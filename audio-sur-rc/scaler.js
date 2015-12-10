@@ -1,5 +1,7 @@
 // Scaler class
 
+// Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a>
+
 function Scaler(lowRate, highRate) {
     this.lowRate = lowRate;
     this.highRate = highRate;

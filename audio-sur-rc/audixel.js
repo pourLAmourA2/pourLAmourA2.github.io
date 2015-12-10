@@ -1,5 +1,7 @@
 // Interface between Pixels and audio data
 
+// Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a>
+
 function Audixel() {
     this.audioPath = [0, 0, 0, 1, 1, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1];
     this.center = 128.0;
