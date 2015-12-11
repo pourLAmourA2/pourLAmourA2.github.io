@@ -12,26 +12,25 @@
             border-width:   2px;
             margin:0 auto;
             overflow: hidden;
-            padding: 8px;
             box-shadow: 5px 5px 5px #bfbfbf;
             width: 576px;">
 
     <div style="margin: 0px 12px; width:552px;">
-        <h2>Lecteur-enregistreur baseRC</h2>
-        <input id="boRecord" type="button" value="Enregistrer / Arrêter" style="width: 100%" />
+        <h2>Lecteur-enregistreur audio pour RC</h2>
+        <input id="boRecord" type="button" value="(  ) Enregistrer / [  ] Arrêter" style="width: 100%" />
         <input id="labelTimer" type="label" style="width: 100%; text-align: center;" />
-        <input id="boPlay" type="button" value="Jouer / Arrêter" style="width: 100%" />
-        <textarea id="latin64" style="width:100%; height:432px; font-family:Arial, Helvetica, sans-serif;"></textarea>
+        <input id="boPlay" type="button" value="| > Jouer / [  ] Arrêter" style="width: 100%" />
+        <textarea id="audioText" style="width:100%; height:392px; font-family:Arial, Helvetica, sans-serif;"></textarea>
+        <hr />
+        <p style="font-size:small;">Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a></p>
     </div>
-    <hr />
-    <p>Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a></p>
 </div>
 
 <script>
 var DEBUG = false;
 
 //  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÈÉÊÎÔàèéêîô";
-var alphabet= "trjDEFGHIJKLMNOPQRSTUVWXkYZABCalibcdeghnmopquvwxyzÀÈÉÊÔÎàèéêôîsf";
+var alphabet= "trjDEFGHIJKLMNOPQRSTUVWXkYZABCalibcdeghnmopquvwxyzÀÈÉÊÔÎàèéêôîsf";   // baseRC
 var dictAlpha = {};
 
 for (var a = 0; a < alphabet.length; a++) {
@@ -88,7 +87,7 @@ if (DEBUG) {
 }
 
 
-var latin64 = document.getElementById("latin64");
+var audioText = document.getElementById("audioText");
 
 
 var scaledSampleRate = 8064;
@@ -185,7 +184,7 @@ var encodeAudio = function() {
         if (id % 24 == 21) { strAudio += ' '; }
     }
 
-    latin64.value = strAudio;
+    audioText.value = strAudio;
 
     if (DEBUG) {
         var alphaStats = {};
@@ -214,7 +213,7 @@ var decodeAudio = function() {
     // Empty signal
     for (var id = 0; id < nbScaledSamples; id++) { scaledSamples[id] = 0.0; }
 
-    var strAudio = latin64.value;
+    var strAudio = audioText.value;
     var idx = 0;
     var tempStr = "";
 
@@ -372,10 +371,13 @@ recordNode.onaudioprocess = function(audioEvent) {
 // Main block for doing the audio recording
 
 function initMedia() {
-    navigator.getUserMedia = (navigator.getUserMedia || navigator.mozGetUserMedia);
+    navigator.getUserMedia = (navigator.getUserMedia ||
+        navigator.mozGetUserMedia || navigator.webkitGetUserMedia || navigator.msGetUserMedia);
 
     if (navigator.getUserMedia) {
-        console.log('getUserMedia supported.');
+        if (DEBUG) {
+            console.log('getUserMedia supported.');
+        }
 
         navigator.getUserMedia(
             {audio:true},
