@@ -72,47 +72,12 @@ var onStopRec = function() {
 
 var encodeAudio = function() {
     var inputData = recSamples.getChannelData(0);
-    var j = 0;
-    var wSignSum = 0.0;
-    var nbTokens = audioCtx.sampleRate;
 
     // Downscale audio samples
     scaledSamples = scaler.downscale(inputData, recSamples.length);
 
-    var strAudio = "### ";
-
-    for (var id = 0; id < nbScaledSamples; id+=3) {
-        var scaledSample0 = 128 + Math.floor(127 * scaledSamples[id + 0]);
-        var scaledSample1 = 128 + Math.floor(127 * scaledSamples[id + 1]);
-        var scaledSample2 = 128 + Math.floor(127 * scaledSamples[id + 2]);
-
-        strAudio += baseRC.bytes2chars(scaledSample0, scaledSample1, scaledSample2);
-        if (id % 24 == 21) { strAudio += ' '; }
-    }
-
-    audioText.value = strAudio;
-
-    if (DEBUG) {
-        var alphaStats = {};
-        var alphaArray = baseRC.alphabet.split("");
-
-        for (var i = 0; i < strAudio.length; i++) {
-            if (!(strAudio.charAt(i) in alphaStats)) alphaStats[strAudio.charAt(i)] = 0;
-            alphaStats[strAudio.charAt(i)] += 1;
-        }
-
-        alphaArray.sort(function(a,b) {
-            if (!(a in alphaStats)) return b;
-            if (!(b in alphaStats)) return a;
-            return alphaStats[b]-alphaStats[a]});
-
-        console.log("--------------------");
-        for (var i in alphaArray) {
-            var key = alphaArray[i];
-            if (key in alphaStats)
-                console.log('Key:' + key + ' count:' + alphaStats[key] + ' value:' + baseRC.dictAlpha[key]);
-        }
-    }
+    // Convert data to BaseRC
+    audioText.value = baseRC.encode(scaledSamples, nbScaledSamples);
 }
 
 var decodeAudio = function() {

@@ -62,6 +62,45 @@ function BaseRC2audio() {
         }
     }
 
+    this.center = 128.0;
+    this.amp = 127.0;
+
+    this.encode = function(samples, N) {
+        var strAudio = "### ";
+
+        for (var id = 0; id < N; id += 3) {
+            var sample0 = Math.floor(this.amp * samples[id + 0] + this.center);
+            var sample1 = Math.floor(this.amp * samples[id + 1] + this.center);
+            var sample2 = Math.floor(this.amp * samples[id + 2] + this.center);
+
+            strAudio += this.bytes2chars(sample0, sample1, sample2);
+            if (id % 24 == 21) { strAudio += ' '; }
+        }
+
+        if (DEBUG) {
+            var alphaStats = {};
+            var alphaArray = this.alphabet.split("");
+
+            for (var i = 0; i < strAudio.length; i++) {
+                if (!(strAudio.charAt(i) in alphaStats)) alphaStats[strAudio.charAt(i)] = 0;
+                alphaStats[strAudio.charAt(i)] += 1;
+            }
+
+            alphaArray.sort(function(a,b) {
+                if (!(a in alphaStats)) return b;
+                if (!(b in alphaStats)) return a;
+                return alphaStats[b]-alphaStats[a]});
+
+            console.log("--------------------");
+            for (var i in alphaArray) {
+                var key = alphaArray[i];
+                if (key in alphaStats)
+                    console.log('Key:' + key + ' count:' + alphaStats[key] + ' value:' + this.dictAlpha[key]);
+            }
+        }
+
+        return strAudio;
+    }
 }
 
 
