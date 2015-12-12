@@ -5,6 +5,8 @@
 // Recording section
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+var bufferSource;
+var audioSource;
 
 var scaledSampleRate = 8064;
 var nbScaledSamples = 5 * scaledSampleRate;
@@ -99,7 +101,7 @@ var onStartPlay = function() {
     decodeAudio();
 
     audioCtx.resume().then(function() {
-        var bufferSource = audioCtx.createBufferSource();
+        bufferSource = audioCtx.createBufferSource();
         bufferSource.buffer = recSamples;
         bufferSource.connect(audioCtx.destination);
         bufferSource.onended = onStopPlay;
@@ -163,7 +165,7 @@ function initMedia() {
             {audio:true},
             // Success callback
             function(audioStream) {
-                var audioSource = audioCtx.createMediaStreamSource(audioStream);
+                audioSource = audioCtx.createMediaStreamSource(audioStream);
                 audioSource.connect(recordNode);
             },
             // Error callback
