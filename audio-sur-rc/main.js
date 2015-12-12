@@ -42,10 +42,10 @@ function char2bytes(char1, char2, char3, char4) {
 }
 
 if (DEBUG) {
-    for (var i = 0; i < alphabet.length; i++) {
-        for (var j = 0; j < alphabet.length; j++) {
-            for (var k = 0; k < alphabet.length; k++) {
-                for (var l = 0; l < alphabet.length; l++) {
+    for (var i = 0; i < alphabet.length; i+=3) {
+        for (var j = 0; j < alphabet.length; j+=5) {
+            for (var k = 0; k < alphabet.length; k+=7) {
+                for (var l = 0; l < alphabet.length; l+=9) {
                     var testStr1 = "" + alphabet[i] + alphabet[j] + alphabet[k] + alphabet[l];
                     var bytes = char2bytes(testStr1.charAt(0), testStr1.charAt(1), testStr1.charAt(2), testStr1.charAt(3));
                     var testStr2 = bytes2char(bytes[0], bytes[1], bytes[2]);
@@ -81,6 +81,9 @@ var nbRecSamples = audioCtx.sampleRate * nbScaledSamples / scaledSampleRate
 var recSamples = audioCtx.createBuffer(1, nbRecSamples, audioCtx.sampleRate);
 var recIndex = 0;
 var mediaReady = false;
+
+var scaler = new Scaler(scaledSampleRate, audioCtx.sampleRate);
+if (DEBUG) { console.log("scaler.nbUpscales = " + scaler.nbUpscales); }
 
 // Buttons and timer label
 
