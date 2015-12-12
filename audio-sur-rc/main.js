@@ -2,37 +2,36 @@
 
 // Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a>
 
-var audioText = document.getElementById("audioText");
-
-var scaledSampleRate = 8064;
-var nbScaledSamples = 5 * scaledSampleRate;
-var scaledSamples = new Float32Array(nbScaledSamples);
-
-function loadPhoto() {}
-function loadImage() {}
-
-
 // Recording section
 
 var audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-var audioSource;
-var bufferSource;
+
+var scaledSampleRate = 8064;
+var nbScaledSamples = 5 * scaledSampleRate;
 
 var nbRecSamples = audioCtx.sampleRate * nbScaledSamples / scaledSampleRate
 var recSamples = audioCtx.createBuffer(1, nbRecSamples, audioCtx.sampleRate);
 var recIndex = 0;
 var mediaReady = false;
 
+
+// 1D Scaler and BaseRC codec
+
 var scaler = new Scaler(scaledSampleRate, audioCtx.sampleRate);
 if (DEBUG) { console.log("scaler.nbUpscales = " + scaler.nbUpscales); }
 
 var baseRC = new BaseRC2audio();
 
-// Buttons and timer label
+
+// Buttons, timer label and text area
 
 var boRecord = document.getElementById("boRecord");
 var labelTimer = document.getElementById("labelTimer");
 var boPlay = document.getElementById("boPlay");
+var audioText = document.getElementById("audioText");
+
+
+// On click actions
 
 var onStartRec = function() {
     if (!mediaReady) {
@@ -100,7 +99,7 @@ var onStartPlay = function() {
     decodeAudio();
 
     audioCtx.resume().then(function() {
-        bufferSource = audioCtx.createBufferSource();
+        var bufferSource = audioCtx.createBufferSource();
         bufferSource.buffer = recSamples;
         bufferSource.connect(audioCtx.destination);
         bufferSource.onended = onStopPlay;
@@ -164,7 +163,7 @@ function initMedia() {
             {audio:true},
             // Success callback
             function(audioStream) {
-                audioSource = audioCtx.createMediaStreamSource(audioStream);
+                var audioSource = audioCtx.createMediaStreamSource(audioStream);
                 audioSource.connect(recordNode);
             },
             // Error callback
@@ -174,6 +173,9 @@ function initMedia() {
         console.log('getUserMedia not supported');
     }
 }
+
+
+// Start with stopped state
 
 onStopRec();
 
