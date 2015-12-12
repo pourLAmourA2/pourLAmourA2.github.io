@@ -2,66 +2,7 @@
 
 // Copyright (c) 2015 pourLAmourA2 - <a href="../LICENSE">MIT License</a>
 
-//  alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyzÀÈÉÊÎÔàèéêîô";
-var alphabet= "trjDEFGHIJKLMNOPQRSTUVWXkYZABCalibcdeghnmopquvwxyzÀÈÉÊÔÎàèéêôîsf";   // baseRC
-var dictAlpha = {};
-
-for (var a = 0; a < alphabet.length; a++) {
-    dictAlpha[alphabet.charAt(a)] = a;
-}
-
-if (DEBUG) {
-    for (var key in dictAlpha) {
-        if (alphabet.charAt(dictAlpha[key]) != key)
-            console.log('Key:' + key + ' value:' + dictAlpha[key]);
-    }
-}
-
-function bytes2char(byte1, byte2, byte3) {
-    var chars = "";
-    var sum = byte1 + (byte2 << 8) + (byte3 << 16) ;
-
-    for (var c = 0; c < 4; c++) {
-        chars += alphabet[sum & 63];
-        sum >>= 6;
-    }
-
-    return chars;
-}
-
-function char2bytes(char1, char2, char3, char4) {
-    var sum = 0;
-    var chars = [char4, char3, char2, char1];
-
-    for (var c = 0; c < 4; c++) {
-        sum <<= 6;
-        sum += dictAlpha[chars[c]];
-    }
-
-    return [(sum & 255), ((sum >> 8) & 255), ((sum >> 16) & 255)];
-}
-
-if (DEBUG) {
-    for (var i = 0; i < alphabet.length; i+=3) {
-        for (var j = 0; j < alphabet.length; j+=5) {
-            for (var k = 0; k < alphabet.length; k+=7) {
-                for (var l = 0; l < alphabet.length; l+=9) {
-                    var testStr1 = "" + alphabet[i] + alphabet[j] + alphabet[k] + alphabet[l];
-                    var bytes = char2bytes(testStr1.charAt(0), testStr1.charAt(1), testStr1.charAt(2), testStr1.charAt(3));
-                    var testStr2 = bytes2char(bytes[0], bytes[1], bytes[2]);
-                    if (testStr1 != testStr2) {
-                        console.log('Probleme avec: ' + [i, j, k, l] + ' ' + testStr1 + ' ' + bytes + ' ' + testStr2 + ' ' +
-                            [dictAlpha[testStr2.charAt(0)], dictAlpha[testStr2.charAt(1)], dictAlpha[testStr2.charAt(2)], dictAlpha[testStr2.charAt(3)]]);
-                    }
-                }
-            }
-        }
-    }
-}
-
-
 var audioText = document.getElementById("audioText");
-
 
 var scaledSampleRate = 8064;
 var nbScaledSamples = 5 * scaledSampleRate;
@@ -84,6 +25,8 @@ var mediaReady = false;
 
 var scaler = new Scaler(scaledSampleRate, audioCtx.sampleRate);
 if (DEBUG) { console.log("scaler.nbUpscales = " + scaler.nbUpscales); }
+
+var baseRC = new BaseRC2audio();
 
 // Buttons and timer label
 
@@ -143,7 +86,7 @@ var encodeAudio = function() {
         var scaledSample1 = 128 + Math.floor(127 * scaledSamples[id + 1]);
         var scaledSample2 = 128 + Math.floor(127 * scaledSamples[id + 2]);
 
-        strAudio += bytes2char(scaledSample0, scaledSample1, scaledSample2);
+        strAudio += baseRC.bytes2chars(scaledSample0, scaledSample1, scaledSample2);
         if (id % 24 == 21) { strAudio += ' '; }
     }
 
@@ -151,7 +94,7 @@ var encodeAudio = function() {
 
     if (DEBUG) {
         var alphaStats = {};
-        var alphaArray = alphabet.split("");
+        var alphaArray = baseRC.alphabet.split("");
 
         for (var i = 0; i < strAudio.length; i++) {
             if (!(strAudio.charAt(i) in alphaStats)) alphaStats[strAudio.charAt(i)] = 0;
@@ -167,7 +110,7 @@ var encodeAudio = function() {
         for (var i in alphaArray) {
             var key = alphaArray[i];
             if (key in alphaStats)
-                console.log('Key:' + key + ' count:' + alphaStats[key] + ' value:' + dictAlpha[key]);
+                console.log('Key:' + key + ' count:' + alphaStats[key] + ' value:' + baseRC.dictAlpha[key]);
         }
     }
 }
@@ -181,11 +124,11 @@ var decodeAudio = function() {
     var tempStr = "";
 
     for (var a = 0; a < strAudio.length; a++) {
-        if (strAudio.charAt(a) in dictAlpha) { tempStr += strAudio.charAt(a); }
+        if (strAudio.charAt(a) in baseRC.dictAlpha) { tempStr += strAudio.charAt(a); }
 
         if (tempStr.length == 4) {
             if (idx + 2 < nbScaledSamples) {
-                var bytes = char2bytes(tempStr.charAt(0), tempStr.charAt(1), tempStr.charAt(2), tempStr.charAt(3));
+                var bytes = baseRC.chars2bytes(tempStr.charAt(0), tempStr.charAt(1), tempStr.charAt(2), tempStr.charAt(3));
 
                 scaledSamples[idx + 0] = (bytes[0] - 128.0) / 127.0;
                 scaledSamples[idx + 1] = (bytes[1] - 128.0) / 127.0;
