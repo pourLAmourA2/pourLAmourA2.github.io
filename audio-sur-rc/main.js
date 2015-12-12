@@ -197,81 +197,11 @@ var decodeAudio = function() {
         }
     }
 
-    var offset = 16;    // 64 bytes aligned
-    var nbUpscales = 4; // 16x
-    var nbUpscaledSamples = (1 << nbUpscales) * nbScaledSamples;
-    var upscaledSampleRate = (1 << nbUpscales) * scaledSampleRate;
-    var upscaledData = new Float32Array(offset + nbUpscaledSamples + offset);
-    var tileSize = 1;
-
-    // Convert to float values (tileSize(=1) * nbScaledSamples)
-    for (var j = 0; j < nbScaledSamples; j++) {
-        upscaledData[offset + j] = scaledSamples[j];
-    }
-
-    // For each tileSize
-    for (var k = 0; k < nbUpscales; k++) {
-        tileSize <<= 1;
-
-        // Enlarge tiles by 2x
-        for (var u = tileSize * nbScaledSamples - 1; u >= 0; u--) {
-            upscaledData[offset + u] = upscaledData[offset + Math.floor(u / 2)];
-        }
-
-        // Five iterations
-        for (var iter = 0; iter < 5; iter++) {
-            // Update limit values: arbitrary outside values
-            upscaledData[offset - 1] = upscaledData[offset];
-            upscaledData[offset + tileSize * nbScaledSamples] = upscaledData[offset + tileSize * nbScaledSamples - 1];
-
-            // For each tile
-            for (var j = 0; j < nbScaledSamples; j++) {
-                var tile = tileSize * j;
-
-                // For each pair (-1, 0) of samples in the original tile
-                for (var u = tile + 1; u < tile + tileSize; u++) {
-                    var v0 = upscaledData[offset + u - 2];
-                    var v1 = upscaledData[offset + u - 1];
-                    var v2 = upscaledData[offset + u + 0];
-                    var v3 = upscaledData[offset + u + 1];
-                    var vSum = v1 + v2;
-                    var vDiff = (v3 - v0) * 0.333333333333;
-
-                    v1 = (vSum - vDiff) * 0.5;
-                    v2 = (vSum + vDiff) * 0.5;
-
-                    // No value outside of [-1, 1], vAdjust is always negative
-                    if (v1 < -1.0) { var vAdjust = 1.0 + v1; v1 -= vAdjust; v2 += vAdjust; }
-                    if (v1 >  1.0) { var vAdjust = 1.0 - v1; v1 += vAdjust; v2 -= vAdjust; }
-                    if (v2 < -1.0) { var vAdjust = 1.0 + v2; v2 -= vAdjust; v1 += vAdjust; }
-                    if (v2 >  1.0) { var vAdjust = 1.0 - v2; v2 += vAdjust; v1 -= vAdjust; }
-
-                    upscaledData[offset + u - 1] = v1;
-                    upscaledData[offset + u + 0] = v2;
-                }
-            }
-        }
-    }
-
+    var upscaledData = scaler.upscale(scaledSamples, nbScaledSamples);
     var outputData = recSamples.getChannelData(0);
-    var i = 0;
-    var wSignSum = 0.0;
-    var nbTokens = upscaledSampleRate;
 
-    // Downscale to final sample rate
-    for (var u = 0; u < nbUpscaledSamples; u++) {
-        if (nbTokens > audioCtx.sampleRate) {
-            wSignSum += audioCtx.sampleRate * upscaledData[offset + u];
-            nbTokens -= audioCtx.sampleRate;
-        }
-        else {
-            wSignSum += nbTokens * upscaledData[offset + u];
-            outputData[i] = wSignSum / upscaledSampleRate;
-
-            i++;
-            wSignSum = (audioCtx.sampleRate - nbTokens) * upscaledData[offset + u];
-            nbTokens += upscaledSampleRate - audioCtx.sampleRate;
-        }
+    for (var i = 0; i < recSamples.length; i++) {
+        outputData[i] = upscaledData[i];
     }
 }
 
