@@ -81,30 +81,10 @@ var encodeAudio = function() {
 }
 
 var decodeAudio = function() {
-    // Empty signal
-    for (var id = 0; id < nbScaledSamples; id++) { scaledSamples[id] = 0.0; }
+    // Convert BaseRC to audio data
+    scaledSamples = baseRC.decode(nbScaledSamples, audioText.value);
 
-    var strAudio = audioText.value;
-    var idx = 0;
-    var tempStr = "";
-
-    for (var a = 0; a < strAudio.length; a++) {
-        if (strAudio.charAt(a) in baseRC.dictAlpha) { tempStr += strAudio.charAt(a); }
-
-        if (tempStr.length == 4) {
-            if (idx + 2 < nbScaledSamples) {
-                var bytes = baseRC.chars2bytes(tempStr.charAt(0), tempStr.charAt(1), tempStr.charAt(2), tempStr.charAt(3));
-
-                scaledSamples[idx + 0] = (bytes[0] - 128.0) / 127.0;
-                scaledSamples[idx + 1] = (bytes[1] - 128.0) / 127.0;
-                scaledSamples[idx + 2] = (bytes[2] - 128.0) / 127.0;
-            }
-
-            idx += 3;
-            tempStr = "";
-        }
-    }
-
+    // Upscale audio data and copy to the output buffer
     var upscaledData = scaler.upscale(scaledSamples, nbScaledSamples);
     var outputData = recSamples.getChannelData(0);
 

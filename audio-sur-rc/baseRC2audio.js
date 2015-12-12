@@ -65,6 +65,35 @@ function BaseRC2audio() {
     this.center = 128.0;
     this.amp = 127.0;
 
+    this.decode = function(N, strAudio) {
+        var samples = new Float32Array(N);
+        var tempStr = "";
+        var idx = 0;
+
+        // Empty signal
+        for (var id = 0; id < N; id++) { samples[id] = 0.0; }
+
+        // Decode baseRC
+        for (var a = 0; a < strAudio.length; a++) {
+            if (strAudio.charAt(a) in this.dictAlpha) { tempStr += strAudio.charAt(a); }
+
+            if (tempStr.length == 4) {
+                if (idx + 2 < N) {
+                    var bytes = this.chars2bytes(tempStr.charAt(0), tempStr.charAt(1), tempStr.charAt(2), tempStr.charAt(3));
+
+                    samples[idx + 0] = (bytes[0] - this.center) / this.amp;
+                    samples[idx + 1] = (bytes[1] - this.center) / this.amp;
+                    samples[idx + 2] = (bytes[2] - this.center) / this.amp;
+                }
+
+                tempStr = "";
+                idx += 3;
+            }
+        }
+
+        return samples;
+    }
+
     this.encode = function(samples, N) {
         var strAudio = "### ";
 
