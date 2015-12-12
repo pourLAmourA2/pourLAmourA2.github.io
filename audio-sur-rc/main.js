@@ -134,20 +134,7 @@ var encodeAudio = function() {
     var nbTokens = audioCtx.sampleRate;
 
     // Downscale audio samples
-    for (var i = 0; i < recSamples.length; i++) {
-        if (nbTokens > scaledSampleRate) {
-            wSignSum += scaledSampleRate * inputData[i];
-            nbTokens -= scaledSampleRate;
-        }
-        else {
-            wSignSum += nbTokens * inputData[i];
-            scaledSamples[j] = wSignSum / audioCtx.sampleRate;
-
-            j++;
-            wSignSum = (scaledSampleRate - nbTokens) * inputData[i];
-            nbTokens += audioCtx.sampleRate - scaledSampleRate;
-        }
-    }
+    scaledSamples = scaler.downscale(inputData, recSamples.length);
 
     var strAudio = "### ";
 
